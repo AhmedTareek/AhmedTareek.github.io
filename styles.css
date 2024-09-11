@@ -116,18 +116,7 @@ footer {
     padding: 1rem;
 }
 
-/* Responsive design for smaller screens */
-@media (max-width: 600px) {
-    nav ul {
-        flex-direction: column; /* Stack nav items vertically */
-    }
-    nav ul li {
-        margin: 0;
-    }
-    nav ul li a {
-        text-align: center;
-    }
-}
+
 
 /* Dark mode styles */
 body.dark-mode {
@@ -156,22 +145,13 @@ body.dark-mode h2 {
 
 
 body.dark-mode h3 {
-    /* color: #5dade2; Light blue - Option 1 */
-    color: #4c94db;  /* Yellow - Option 2
-    /* color: #2ecc71; */ /* Green - Option 3 */
-    /* color: #e74c3c; */ /* Red - Option 4 */
+    color: #4c94db;
 }
 
 body.dark-mode a {
     color: #5dade2;
 }
 
-/* Dark mode toggle switch styles */
-/* styles.css */
-
-/* ... (previous styles remain the same) ... */
-
-/* Dark mode toggle styles */
 .dark-mode-toggle {
     position: absolute;
     top: 10px;
@@ -218,11 +198,9 @@ body.dark-mode .dark-mode-toggle .moon-icon {
     transform: scale(1);
 }
 
-/* Responsive design for dark mode toggle */
+/* Hide nav bar for small screens */
 @media (max-width: 600px) {
-    .dark-mode-toggle {
-        position: static;
-        display: block;
-        margin: 10px auto 0;
+    nav {
+        display: none;
     }
 }
