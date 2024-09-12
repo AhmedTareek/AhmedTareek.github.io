@@ -35,21 +35,18 @@ p {
     margin-bottom: 30px;
     text-align: justify;
 }
-.image-container {
-    display: flex;
-
-}
-.image-title {
-    font-weight: bold;
-    margin-top: 10px;
-    border-bottom: 1px solid #ccc;
-  }
 
 img {
     max-width: 100%;
     height: auto;
     cursor: zoom-in;
     border-radius: 3%;
+}
+
+.normal-img {
+    position:relative; 
+    transform: translateX(-50%); 
+    left: 50%;
 }
 
 a {
