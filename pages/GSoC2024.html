@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CESRBDDs</title>
+    <link rel="stylesheet" href="/AhmedTareek.github.io/styles/GSoC2024_styles.css">
+</head>
+
+<body>
+    <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="content-wrapper">
+        <h1>Google Summer of Code 2024</h1>
+        <hr style="margin: 10px;">
+        <article>
+            <p>
+                This project was completed during the summer of 2024 as part of the Google Summer of Code program, under
+                the Software and Computational Systems Lab at the Ludwig Maximilian University of Munich.
+            </p>
+            <h2>Goal Of The Project</h2>
+            <p>
+                The main goal of the project was to extend PJBDD, a multi-threaded Binary Decision Diagram (BDD) library
+                written in Java that supports concurrent computation, parallel operations, and automated resource
+                management. BDDs provide a compact representation of Boolean formulas and are used for efficient
+                manipulation.
+
+                The extension aimed to build and manipulate CESRBDDs, enabling a BDD to be reduced even further than
+                existing techniques, such as tagged or zero-suppressed BDDs, while maintaining its compact form. The
+                broader goal is for CESRBDDs (Complemented Edge specific reduction Binary Decision Diagrams)
+                to become the go-to standard for applications using BDDs in core
+                algorithms, such as CPAChecker.
+
+
+            </p>
+            <h2>What Was Done</h2>
+            <p> Before starting with the algorithms, we needed to define the structures and tables that would be used
+                within the algorithms. The purpose of the unique tables was to store every node created, so if you
+                attempt to create a new node, you can first check if it's already present in the unique table.
+                Additionally, these tables use weak references to allow Java’s garbage collector to remove nodes that
+                are no longer in use. </p>
+            <ul>
+                <li>Defined and implemented the Node and Edge structures.</li>
+                <li>Extended various unique tables to be compatible with CESRBDDs, including: <ul>
+                        <li>Weak Hash Map unique table</li>
+                        <li>Compare-and-Swap Array unique table</li>
+                        <li>Weak Hash Deque unique table</li>
+                        <li>Weak Array unique table</li>
+                    </ul>
+                </li>
+                <li>Implemented the Node Manager, which handles the different unique tables and performs basic
+                    operations like creating a node or getting a node’s level.</li>
+                <li>Wrote unit tests for the Node Manager and unique tables to ensure functionality.</li>
+            </ul>
+            <p> After confirming that the Node Manager and unique tables functioned as expected, we moved on to
+                implementing the algorithms responsible for manipulating CESRBDDs. This part was challenging because the
+                paper contained ambiguities in its pseudocode, which required further investigation to clarify.
+                Intensive testing was also conducted to ensure accuracy. In summary: </p>
+            <ul>
+                <li>Implemented the manipulation algorithms.</li>
+                <li>Extensively tested the algorithms to ensure correct behavior, achieving 100% line coverage and 96%
+                    branch coverage.</li>
+            </ul>
+
+            <p> The next step was to add the Creator to CESRBDDs. This interface, used throughout PJBDD, abstracts the
+                underlying BDD from the user, so it was important to implement it correctly. Despite significant
+                differences between regular BDDs and CESRBDDs—especially regarding the importance of edges—the main
+                functionalities of the Creator were focused on performing Boolean operations between CESRBDDs. Some of
+                these operations are listed below: </p>
+            <ul>
+                <li>makeVariable()</li>
+                <li>makeFalse()</li>
+                <li>makeAnd(DD, DD)</li>
+                <li>makeNot(DD)</li>
+                <li>makeOr(DD, DD)</li>
+                <li>makeXor(DD, DD)</li>
+                <li>makeNor(DD, DD)</li>
+                <li>makeXnor(DD, DD)</li>
+                <li>makeNand(DD, DD)</li>
+                <li>makeEqual(DD, DD)</li>
+                <li>makeUnequal(DD, DD)</li>
+            </ul>
+            <p> After implementing the Creator, we ran the Creator test suite to ensure it behaved as expected. We then
+                moved on to the next step, which involved the following: </p>
+            <ul>
+                <li>Designing and implementing a SAT algorithm that retrieves a satisfying assignment for the decision
+                    diagram (if available).</li>
+                <li>Designing and implementing a SAT Count algorithm that returns the number of possible assignments to
+                    a Boolean formula.</li>
+                <li>Testing the SAT algorithms with SAT files and PJBDD examples, such as N-Queens, to ensure
+                    reliability.</li>
+            </ul>
+            <p> It is worth noting that the SAT algorithm solves an issue found in PJBDD with other Decision Diagrams
+                <a href="https://gitlab.com/sosy-lab/software/paralleljbdd/-/issues/31">Issue on Gitlab</a>. The final
+                step was to add caching to the algorithms,
+                which involved:
+            </p>
+            <ul>
+                <li>Implementing hashing for the nodes and edges.</li>
+                <li>Configuring cache settings, including expiration times, to allow garbage collection of unused nodes.
+                </li>
+                <li>Extensively testing everything again to ensure the cache worked as expected.</li>
+            </ul>
+            <h2>what code got merged</h2>
+            <p>Here will be a link to the merge request</p>
+
+            <h2>What Is Left to Do</h2>
+            <p>There are mainly two tasks remaining:</p>
+            <h4>Optimize the Way the Creator Works</h4>
+            <p>For technical reasons, to use the Creator environment in the most efficient way, you must determine the
+                number of variables in advance. Failing to do so will result in slower performance. The goal here is to
+                explore ideas or optimizations to improve performance in cases where the number of variables is not
+                predetermined.</p>
+            <h4>Make More Applications Compatible with CESRBDDs</h4>
+            <p>As mentioned earlier, CESRBDDs differ from other BDDs due to the importance of edges, which requires
+                applications using PJBDD to adapt to these differences. One such application is the CPAchecker.</p>
+
+
+            <h2>Results</h2>
+            <p>
+                below is an example of a regular BDDs along with its equivilant CESRBDDs You can notice the differnce in
+                the node count and the info encoded on the edges
+
+            <div class="image-container">
+                <img src="test_998_bdd.png" alt="" width="200px" height="400px" style="margin-right: 15px;">
+                <img src="test_998_cesrbdd.png" alt="" width="200px" height="400px">
+            </div>
+
+            </p>
+
+            <h2>Refrences</h2>
+            <p>
+            <ul>
+                <li> You can find the paper here <a
+                        href="https://link.springer.com/article/10.1007/s10009-021-00640-0">BDDs
+                        with
+                        complemented edges and
+                        edge-specified reductionss (CESRBDDs)</a> </li>
+            </ul>
+            </p>
+        </article>
+    </div>
+
+    <div class="zoom-overlay">
+        <img src="" alt="Zoomed image">
+    </div>
+
+    <!-- Link to external JavaScript file -->
+    <script src="/AhmedTareek.github.io/scripts/GSoC2024_scripts.js"></script>
+</body>
+
+</html>
