@@ -36,6 +36,10 @@ p {
     text-align: justify;
 }
 
+ul {
+    text-align: justify;
+}
+
 img {
     max-width: 100%;
     height: auto;
@@ -76,6 +80,7 @@ a:hover {
     max-width: 90%;
     max-height: 90%;
     object-fit: contain;
+    cursor: zoom-out;
 }
 
 .dark-mode-toggle {
